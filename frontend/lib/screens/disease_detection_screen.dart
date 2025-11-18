@@ -1,6 +1,8 @@
+// lib/screens/disease_detection_screen.dart
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:dio/dio.dart'; // <-- needed for FormData & MultipartFile
 import '../services/api_service.dart';
 import '../models/disease.dart';
 
@@ -19,10 +21,19 @@ class _DiseaseDetectionScreenState extends State<DiseaseDetectionScreen> {
   bool _isLoading = false;
 
   Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() => _image = pickedFile);
-      await _predictDisease();
+    try {
+      final pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 75,
+      );
+      if (pickedFile != null) {
+        setState(() => _image = pickedFile);
+        await _predictDisease();
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Image pick failed: $e')));
     }
   }
 
@@ -37,7 +48,13 @@ class _DiseaseDetectionScreenState extends State<DiseaseDetectionScreen> {
           filename: _image!.name,
         ),
       });
+
+      // If your ApiService expects FormData, this will work.
+      // Otherwise you can call Dio directly here as fallback:
+      // final response = await Dio().post('$BASE_URL/api/v1/disease/predict', data: formData);
+
       final response = await _apiService.predictDisease(formData);
+      // ApiService should return Map<String, dynamic> or JSON-decoded map.
       setState(() => _prediction = DiseasePrediction.fromJson(response));
     } catch (e) {
       ScaffoldMessenger.of(

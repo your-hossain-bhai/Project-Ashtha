@@ -1,3 +1,4 @@
+// lib/theme.dart
 import 'package:flutter/material.dart';
 
 const Color primaryColor = Color(0xFF0B6B2D); // Green brand color
@@ -16,7 +17,8 @@ ThemeData appTheme = ThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
   ),
-  cardTheme: const CardTheme(
+  // Use a non-const CardTheme to avoid SDK mismatches:
+  cardTheme: const CardThemeData(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(12)),
     ),
