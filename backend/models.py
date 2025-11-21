@@ -1,6 +1,8 @@
-from pydantic import BaseModel, EmailStr
-from typing import List, Optional
+from typing import Optional, List
 from datetime import datetime
+
+from pydantic import BaseModel, Field, EmailStr
+
 
 class User(BaseModel):
     id: Optional[str] = None
@@ -9,25 +11,31 @@ class User(BaseModel):
     hashed_password: str
     created_at: Optional[datetime] = None
 
+
 class UserInDB(User):
     pass
 
+
 class UserCreate(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1)
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=6)
+
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
 
 class Token(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
 
+
 class TokenData(BaseModel):
     email: Optional[str] = None
+
 
 class WeatherResponse(BaseModel):
     city: str
@@ -37,8 +45,10 @@ class WeatherResponse(BaseModel):
     wind_kmh: float
     forecast: List[dict]
 
+
 class DiseasePredictRequest(BaseModel):
     pass  # For multipart
+
 
 class DiseasePredictResponse(BaseModel):
     crop: str
@@ -47,22 +57,27 @@ class DiseasePredictResponse(BaseModel):
     advice: List[str]
     recommendations: List[dict]
 
+
 class CropRecommendRequest(BaseModel):
     soil_ph: float
     moisture: float
     temperature: float
 
+
 class CropRecommendResponse(BaseModel):
     recommendations: List[dict]
+
 
 class MarketPrice(BaseModel):
     crop: str
     price_per_kg: float
     trend: str
 
+
 class MarketLatestResponse(BaseModel):
     city: str
     prices: List[MarketPrice]
+
 
 class Course(BaseModel):
     id: Optional[str] = None
@@ -71,6 +86,15 @@ class Course(BaseModel):
     instructor: str
     price: float
     created_at: Optional[datetime] = None
+
+
+class SignupResponse(BaseModel):
+    message: str
+    user: dict
+    access_token: str
+    refresh_token: str
+    token_type: str
+
 
 class MarketPost(BaseModel):
     id: Optional[str] = None

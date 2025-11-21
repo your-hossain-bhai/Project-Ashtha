@@ -10,8 +10,10 @@ def test_signup():
         "email": "test@example.com",
         "password": "Test@1234"
     })
-    assert response.status_code == 201
+    assert response.status_code == 200
     data = response.json()
+    assert "message" in data
+    assert "user" in data
     assert "access_token" in data
     assert "refresh_token" in data
 

@@ -7,7 +7,10 @@ import os
 async def seed_data():
     client = AsyncIOMotorClient(os.getenv("MONGODB_URL", "mongodb://localhost:27017"))
     db = client.krishokdhoni
-    
+
+    # Create unique index on email
+    await db.users.create_index("email", unique=True)
+
     # Seed user
     hashed_password = get_password_hash("Demo@1234")
     user = {
